@@ -7,6 +7,7 @@ const CANVAS_WIDTH = canvas.width = 800;
 const CANVAS_HEIGHT = canvas.height = 700;
 
 let gameSpeed = 5; 
+// let gameFrame = 0;
 
 // importing and sourcing images
 const backgroundLayer1 = new Image();
@@ -77,7 +78,10 @@ class Layer {
         this.speed = gameSpeed * speedModifier
     }
     update() {
-        this.speed = gameSpeed * this.speedModifier
+        this.speed = gameSpeed * this.speedModifier;
+
+        // this.x = gameFrame * this.speed % this.width
+        //  cant comprehend this yet but this line works and can replace every code in update although theres a small bug
 
         // reset position if reached -2400, then fix gaps by adding this.x - this.speed
         if (this.x <= -this.width){
@@ -88,7 +92,7 @@ class Layer {
         // }
 
         // moves image to the left by decrementing x and x2 with the game speed
-        this.x = Math.floor(this.x - this.speed); 
+        this.x -= this.speed; 
         // this.x2 = Math.floor(this.x2 - this.speed);    
     }
     draw() {
@@ -115,7 +119,7 @@ function animate(){
         object.update();
         object.draw();
     })
-
+    // gameFrame--
     requestAnimationFrame(animate);
 };
 
