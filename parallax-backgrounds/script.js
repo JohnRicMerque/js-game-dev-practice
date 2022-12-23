@@ -71,7 +71,7 @@ class Layer {
         this.y = 0
         this.width = 2400;
         this.height = 700;
-        this.x2 = this.width
+        // this.x2 = this.width
         this.image = image
         this.speedModifier = speedModifier
         this.speed = gameSpeed * speedModifier
@@ -81,21 +81,23 @@ class Layer {
 
         // reset position if reached -2400, then fix gaps by adding this.x - this.speed
         if (this.x <= -this.width){
-            this.x = this.width + this.x2 - this.speed
+            this.x = 0
         }
-        if (this.x2 <= -this.width){
-            this.x2 = this.width + this.x - this.speed 
-        }
+        // if (this.x2 <= -this.width){
+        //     this.x2 = this.width + this.x - this.speed 
+        // }
 
         // moves image to the left by decrementing x and x2 with the game speed
         this.x = Math.floor(this.x - this.speed); 
-        this.x2 = Math.floor(this.x2 - this.speed);    
+        // this.x2 = Math.floor(this.x2 - this.speed);    
     }
     draw() {
         ctx.drawImage(this.image, this.x, this.y, this. width, this.height)
-        ctx.drawImage(this.image, this.x2, this.y, this. width, this.height)
+        ctx.drawImage(this.image, this.x + this.width, this.y, this. width, this.height)
     }
 }
+
+// see 37:00 of this https://www.youtube.com/watch?v=Mg7ibYWhjPI&list=PLYElE_rzEw_uryBrrzu2E626MY4zoXvx2&index=2&ab_channel=Frankslaboratory to see visual representation of what happens in the refacrtored code
 
 const layer1 = new Layer(backgroundLayer1, 0.2)
 const layer2 = new Layer(backgroundLayer2, 0.4)
