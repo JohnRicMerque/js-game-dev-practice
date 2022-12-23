@@ -6,7 +6,7 @@ const ctx = canvas.getContext('2d');
 const CANVAS_WIDTH = canvas.width = 800;
 const CANVAS_HEIGHT = canvas.height = 700;
 
-let gameSpeed = 5 
+let gameSpeed = 5; 
 
 // importing and sourcing images
 const backgroundLayer1 = new Image();
@@ -20,6 +20,19 @@ backgroundLayer2.src = './images/layer-2.png'
 backgroundLayer3.src = './images/layer-3.png'
 backgroundLayer4.src = './images/layer-4.png'
 backgroundLayer5.src = './images/layer-5.png'
+
+// SLIDER
+const slider = document.getElementById("slider");
+slider.value = gameSpeed
+
+const showGameSpeed = document.getElementById('showGameSpeed');
+showGameSpeed.innerHTML = gameSpeed;
+
+// change event triggers when a value is changed, e here is the event object, e.target is the selected target of the event which is the slider
+slider.addEventListener('change', function(e){
+    gameSpeed = e.target.value
+    showGameSpeed.innerHTML = gameSpeed;
+})
 
 // let x = 0;
 // let x2 = 2400;
@@ -65,7 +78,7 @@ class Layer {
     }
     update() {
         this.speed = gameSpeed * this.speedModifier
-        
+
         // reset position if reached -2400, then fix gaps by adding this.x - this.speed
         if (this.x <= -this.width){
             this.x = this.width + this.x2 - this.speed
