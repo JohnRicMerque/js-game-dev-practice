@@ -15,9 +15,12 @@ let gameFrame = 0;
 class Enemy {
     constructor(){
         this.image = new Image()
-        this.image.src = "./images/enemy1.png";
-        this.spriteWidth = 293;
-        this.spriteHeight = 155;
+        this.image.src = "./images/enemy2.png";
+        this.speed = Math.random() * 4 + 1;
+        this.spriteWidth = 266;
+        this.spriteHeight = 188;
+
+        
 
         // here we divide width and height by 2.5 to retain aspect ratio while also scaling image size lower
         this.width = this.spriteWidth/2.5;
@@ -28,12 +31,19 @@ class Enemy {
         this.frame = 0;
         this.y = Math.random() * (canvas.height - this.width);
         this.flapSpeed = Math.floor(Math.random() * 3 + 1);
-    } // random number from 1 to 4
+        this.angle = 0;
+        this.angleSpeed = Math.random() * 0.2;
+        this.curve = Math.random() * 7;
+    }
 
     update(){
         // for motion a random number from - 2.5 to 2.5 which is 5 in length difference will be added to the initial x and y values from the constructor
-        this.x += Math.random() * 5 - 2.5;
-        this.y += Math.random() * 5 - 2.5;
+        this.x -= this.speed;
+        this.y += this.curve * Math.sin(this.angle);
+        this.angle += this.angleSpeed; 
+
+        //resets the x position on the right if its on the far left
+        if (this.x + this.width < 0) this.x = canvas.width;
 
         // for animating sprites using ternary operator, if this frame is greater than 4, reset it to zero else increment this.frame
         if (gameFrame % this.flapSpeed === 0){ // if game frame is divisible by flap speed which is a random number, this randomizes flap speed beacuse incrementing frame is only run when divisibility is true, and they are random dure to Math.random in flapspeed
