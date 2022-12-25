@@ -10,13 +10,12 @@ CANVAS_HEIGHT = canvas.height = 1000;
 const numberOfEnemies = 100;
 const enemiesArray = [];
 
-const enemyImage = new Image();
-enemyImage.src = "./images/enemy1.png"
-
 let gameFrame = 0;
 
 class Enemy {
     constructor(){
+        this.image = new Image()
+        this.image.src = "./images/enemy1.png";
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
 
@@ -26,19 +25,20 @@ class Enemy {
         this.width = this.spriteWidth/2.5;
         this.height = this.spriteHeight/2.5; 
         this.frame = 0;
-    }
+        this.flapSpeed = Math.floor(Math.random() * 3 + 1);
+    } // randpm number from 1 to 4
     update(){
         // for motion
         this.x += this.speed;
         this.y += this.speed;
         // for animating sprites using ternary operator, if this frame is greater than 4, reset it to zero else increment this.frame
-        if (gameFrame % 2 === 0){ // if game frame is even only then increment, this slows down animation
+        if (gameFrame % this.flapSpeed === 0){ // if game frame is divisible by flap speed which is a random number, this randomizes flap speed beacuse incrementing frame is only run when divisibility is true, and they are random dure to Math.random in flapspeed
             this.frame > 4? this.frame = 0: this.frame++;
         }
         
     }
     draw(){
-        ctx.drawImage(enemyImage, this.frame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width, this.height); // this frame x spritewith as x value makes sure the images are switched to the next sprite based on the frame attribute
+        ctx.drawImage(this.image, this.frame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width, this.height); // this frame x spritewith as x value makes sure the images are switched to the next sprite based on the frame attribute
     }
 };
 
