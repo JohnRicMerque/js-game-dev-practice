@@ -1,6 +1,6 @@
-# Learning Sprite Animation
+# Learning Parallax Backgrounds
 The project of the second video tutorial of JavaScript Game Development Masterclass 2022 by Franks Laboratory.
-An endlessly scrolling background with different speeds based on a game speed toggle you can dynamically change in JavaScript. 
+An endlessly scrolling background with different speeds based on a game speed toggle you can dynamically change in JavaScript. I followed this for educational purposes only.
 
 ## Preview
 <img src="./images/parallaxbackgroundpreview.gif"/>
