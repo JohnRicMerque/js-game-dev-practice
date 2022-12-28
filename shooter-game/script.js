@@ -15,27 +15,36 @@ class Raven {
         this.spriteHeight = 194;
         this.sizeModifier = Math.random()* 0.4 + 0.4; // to randomize raven size
         this.width = this.spriteWidth * this.sizeModifier;
-        this.height = this.spriteHeight * this.sizeModifier;
+        this.height = this.spriteHeight * this.sizeModifier; // the size modifier was multiplied with the object width and height for scaling
         this.x = canvas.width;
-        this.y = Math.random() * (canvas.height - this.height);
+        this.y = Math.random() * (canvas.height - this.height); // this means any number from 0 to just above the size of a sprite image below in y axis so that no raven is cut below canvas ground
         this.directionX = Math.random() * 5 + 3;
         this.directionY = Math.random() * 5 - 2.5;
         this.markedForDeletion = false;
         this.image = new Image();
         this.image.src = './images/raven.png'
-        this.frame = 0;
-        this.maxFrame = 4;
+        this.frame = 0; // sprite animation index frame
+        this.maxFrame = 4; // last sprite animation index
+        this.timeSinceFlap = 0;
+        this.flapInterval = Math.random() * 50 + 50; // time (ms) for each flap of raven wings
 
 
     }
-    update(){
+    update(deltaTime){
         this.x -= this.directionX;
-        if (this.x < 0 - this.width) // if the object is way past the canvas
+        if (this.x < 0 - this.width) // if the object is way past the canvas its marked for deletion in the array
         this.markedForDeletion = true;
         
-        // for sprite animation
-        if (this.frame > this.maxFrame) this.frame = 0;
-        else this.frame++;
+        // utilzing delta time to unify speed across devices with different processing speed
+        this.timeSinceFlap += deltaTime;
+        if (this.timeSinceFlap > this.flapInterval) {
+            // for sprite animation to cycle
+            if (this.frame > this.maxFrame) this.frame = 0;
+            else this.frame++;
+            // reset var
+            this.timeSinceFlap = 0;
+        }
+
     }
     draw(){
         ctx.drawImage(this.image, this.frame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width,this.height)
@@ -57,7 +66,7 @@ function animate(timestamp){ // timestamp is a built in argument that calculates
         timeToNextRaven = 0;
     };
 
-    [...ravens].forEach(object => object.update()); // spread operator is used to have multiple elements be run simultaneously
+    [...ravens].forEach(object => object.update(deltaTime)); // spread operator is used to have multiple elements be run simultaneously
     [...ravens].forEach(object => object.draw())
 
     // this deletes ravens outside canvas
