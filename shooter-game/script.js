@@ -11,18 +11,34 @@ let ravens = [];
 
 class Raven {
     constructor(){
-        this.width = 100;
-        this.height = 50;
+        this.spriteWidth = 271;
+        this.spriteHeight = 194;
+        this.sizeModifier = Math.random()* 0.4 + 0.4; // to randomize raven size
+        this.width = this.spriteWidth * this.sizeModifier;
+        this.height = this.spriteHeight * this.sizeModifier;
         this.x = canvas.width;
         this.y = Math.random() * (canvas.height - this.height);
         this.directionX = Math.random() * 5 + 3;
         this.directionY = Math.random() * 5 - 2.5;
+        this.markedForDeletion = false;
+        this.image = new Image();
+        this.image.src = './images/raven.png'
+        this.frame = 0;
+        this.maxFrame = 4;
+
+
     }
     update(){
         this.x -= this.directionX;
+        if (this.x < 0 - this.width) // if the object is way past the canvas
+        this.markedForDeletion = true;
+        
+        // for sprite animation
+        if (this.frame > this.maxFrame) this.frame = 0;
+        else this.frame++;
     }
     draw(){
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.drawImage(this.image, this.frame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width,this.height)
     }
 }
 
@@ -43,6 +59,9 @@ function animate(timestamp){ // timestamp is a built in argument that calculates
 
     [...ravens].forEach(object => object.update()); // spread operator is used to have multiple elements be run simultaneously
     [...ravens].forEach(object => object.draw())
+
+    // this deletes ravens outside canvas
+    ravens = ravens.filter(object => !object.markedForDeletion) // reassign ravens array with the filtered array that returns only objects that is not marked for deletion
 
     requestAnimationFrame(animate)
 }
