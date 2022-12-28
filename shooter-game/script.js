@@ -3,6 +3,15 @@ const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// created second canvas to house the colored hit boxes for color collision detection
+const collisionCanvas = document.getElementById('collisionCanvas');
+const collisionCtx = collisionCanvas.getContext('2d');
+collisionCanvas.width = window.innerWidth;
+collisionCanvas.height = window.innerHeight;
+
+let score = 0; // scoring
+ctx.font = '50px Impact';
+
 let timeToNextRaven = 0; // accumulate ms values between frames until it reaches interval value and trigger next frame
 let ravenInterval = 500; // value in miliseconds, everytime it accumulates enough to reach 500ms it triggers next raven and resets 0
 let lastTime = 0; // holds value of timestamp
@@ -13,7 +22,7 @@ class Raven {
     constructor(){
         this.spriteWidth = 271;
         this.spriteHeight = 194;
-        this.sizeModifier = Math.random()* 0.4 + 0.4; // to randomize raven size
+        this.sizeModifier = Math.random()* 0.6 + 0.4; // to randomize raven size
         this.width = this.spriteWidth * this.sizeModifier;
         this.height = this.spriteHeight * this.sizeModifier; // the size modifier was multiplied with the object width and height for scaling
         this.x = canvas.width;
@@ -27,11 +36,21 @@ class Raven {
         this.maxFrame = 4; // last sprite animation index
         this.timeSinceFlap = 0;
         this.flapInterval = Math.random() * 50 + 50; // time (ms) for each flap of raven wings
+        this.randomColors = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)] // create random colors rgb
+        this.color = 'rgb(' + this.randomColors[0] + ',' + this.randomColors[1] + ',' + this.randomColors[2] + ')';
 
 
     }
     update(deltaTime){
+        // for ravens to bounce of ones they reach uppermost and lowermost part of canvas
+        if (this.y < 0 || this.y > canvas.height - this.height) {
+            this.directionY *= -1;
+        }
+
+        // for raven motion and direction
         this.x -= this.directionX;
+        this.y += this.directionY;
+
         if (this.x < 0 - this.width) // if the object is way past the canvas its marked for deletion in the array
         this.markedForDeletion = true;
         
@@ -47,14 +66,38 @@ class Raven {
 
     }
     draw(){
-        ctx.drawImage(this.image, this.frame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width,this.height)
+        // for colored hit box on ravens
+        collisionCtx.fillStyle = this.color;
+        collisionCtx.fillRect(this.x, this.y, this.width, this.height); 
+
+        // for the raven sprite
+        ctx.drawImage(this.image, this.frame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width,this.height);
     }
 }
 
-const raven = new Raven();
+function drawScore(){
+    ctx.fillStyle = 'white';
+    ctx.fillText('Score: ' + score, 50, 75)
+}
+
+// scans the other canvas
+window.addEventListener('click', function(e){
+    // get color data in clicking boxes
+    const detectPixelColor = collisionCtx.getImageData(e.x, e.y, 1, 1); 
+    const pc = detectPixelColor.data;
+
+    ravens.forEach(object => {
+        // comparing color data in constructor with the one clicked, if same color delete the raven and add score
+        if (object.randomColors[0] === pc[0] && object.randomColors[1] === pc[1] && object.randomColors[2] === pc[2]) {
+            object.markedForDeletion = true;
+            score++;
+        }
+    })
+})
 
 function animate(timestamp){ // timestamp is a built in argument that calculates how much time elapsed while running frames
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    collisionCtx.clearRect(0, 0, canvas.width, canvas.height);
 
     let deltaTime = timestamp - lastTime; // this calculates time between frames
 
@@ -64,7 +107,14 @@ function animate(timestamp){ // timestamp is a built in argument that calculates
     if (timeToNextRaven > ravenInterval) { // when timeToNextRaven variable reaches the time we set to trigger raven in raven interval (500ms), we create the object
         ravens.push(new Raven());
         timeToNextRaven = 0;
+
+        // to make larger ravens be drawn first and on top of the smaller ones
+        ravens.sort(function(a,b){
+            return a.width - b.width
+        })
     };
+
+    drawScore();
 
     [...ravens].forEach(object => object.update(deltaTime)); // spread operator is used to have multiple elements be run simultaneously
     [...ravens].forEach(object => object.draw())
