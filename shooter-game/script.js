@@ -9,7 +9,7 @@ const collisionCtx = collisionCanvas.getContext('2d');
 collisionCanvas.width = window.innerWidth;
 collisionCanvas.height = window.innerHeight;
 
-let score = 0; // scoring
+let score = 0; // houses scoring
 let gameOver = false;
 ctx.font = '50px Impact';
 
@@ -39,6 +39,7 @@ class Raven {
         this.flapInterval = Math.random() * 50 + 50; // time (ms) for each flap of raven wings
         this.randomColors = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)] // create random colors rgb
         this.color = 'rgb(' + this.randomColors[0] + ',' + this.randomColors[1] + ',' + this.randomColors[2] + ')';
+        this.hasTrail = Math.random() > 0.5; // returns random true or false value because Math.random returns random number between 0 and 1
 
     }
     update(deltaTime){
@@ -62,6 +63,12 @@ class Raven {
             else this.frame++;
             // reset var
             this.timeSinceFlap = 0;
+
+            if (this.hasTrail) {
+                for (let i = 0; i < 5; i++){
+                    particles.push(new Particles(this.x, this.y, this.width, this.color)) // add particles using raven attributes in ths code block where we increment each frame to move sprite, to trail it to that raven
+                }
+            }
         }
         if (this.x < 0 - this.width) gameOver = true; // game over condition
 
@@ -102,12 +109,41 @@ class Explosions {
         if (this.timeSinceLastFrame > this.frameInterval){ // increase frame index if time since last frame reaches the given interval
             this.frame++;
             this.timeSinceLastFrame = 0;
-            if (this.frame > 5 ) this.markedForDeletion = true;
+            if (this.frame > 5 ) this.markedForDeletion = true; // after one cyle for the sprite animation, mark for deletion
         }
     }
     draw(){
         ctx.drawImage(this.image, this.frame * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.size, this.size)
     } 
+}
+
+let particles = []; // houses all particle objects
+
+class Particles {
+    constructor(x, y, size, color) {
+        this.size = size
+        this.x = x + this.size/2 + Math.random() * 50 - 25; // add division of this.size to make particles position like a trail
+        this.y = y + this.size/3;
+        this.radius = Math.random() * this.size/10;
+        this.maxRadius = Math.random() * 20 + 35;
+        this.markedForDeletion = false;
+        this.speedX = Math.random() * 1 + 0.5;
+        this.color = color;
+    }
+    update(){
+        this.x += this.speedX;
+        this.radius += 0.5;
+        if (this.radius > this.maxRadius - 5) this.markedForDeletion = true; // -5 is to fix blinking trails
+    }
+    draw(){
+        ctx.save();
+        ctx.globalAlpha = 1 - this.radius/this.maxRadius; // for opacity
+        ctx.beginPath(); 
+        ctx.fillStyle = this.color;
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore(); // we use ctx save to capture only this element, and restores canvas settings to the original after using ctx restore, this is to make sure modifications on this code block does not affect everything everytime on canvas
+    }
 }
 
 function drawScore(){
@@ -117,11 +153,11 @@ function drawScore(){
 
 function drawGameOver(){
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = 'white';
     ctx.fillText('Game Over, your score is '+ score, canvas.width/2, canvas.height/2);
 }
 
-// scans the other canvas
+// scans the hitbox canvas
 window.addEventListener('click', function(e){
     // get color data in clicking boxes
     const detectPixelColor = collisionCtx.getImageData(e.x, e.y, 1, 1); 
@@ -132,14 +168,14 @@ window.addEventListener('click', function(e){
         if (object.randomColors[0] === pc[0] && object.randomColors[1] === pc[1] && object.randomColors[2] === pc[2]) { // for each object check which raven has hitbox color same as the clicked and mark it for deletion
             object.markedForDeletion = true;
             score++;
-            explosions.push(new Explosions(object.x, object.y, object.width))
+            explosions.push(new Explosions(object.x, object.y, object.width)) // note that object here refers to every instance of raven in the ravens array;
         }
     })
 })
 
 function animate(timestamp){ // timestamp is a built in argument that calculates how much time elapsed while running frames
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    collisionCtx.clearRect(0, 0, canvas.width, canvas.height);
+    collisionCtx.clearRect(0, 0, canvas.width, canvas.height); // clearing all previous animation each loop
 
     let deltaTime = timestamp - lastTime; // this calculates time between frames
 
@@ -158,15 +194,17 @@ function animate(timestamp){ // timestamp is a built in argument that calculates
 
     drawScore();
 
-    [...ravens, ...explosions].forEach(object => object.update(deltaTime)); // spread operator is used to have multiple elements be run simultaneously
-    [...ravens, ...explosions].forEach(object => object.draw())
+    [...particles, ...ravens, ...explosions].forEach(object => object.update(deltaTime)); // spread operator is used to have multiple array elements be run simultaneously 
+    // NOTE THAT THE ORDER IN THIS CODE DETERMINES LAYERS, like which is on top of the other, particles is drawn first so that they are behind raven and explosion 
+    [...particles, ...ravens, ...explosions].forEach(object => object.draw())
 
     // this deletes ravens outside canvas
-    ravens = ravens.filter(object => !object.markedForDeletion) // reassign ravens array with the filtered array that returns only objects that is not marked for deletion
+    ravens = ravens.filter(object => !object.markedForDeletion) // reassign ravens array with the filtered array that returns only objects that is not marked for deletion, the same is true for explosions and particles below
     explosions = explosions.filter(object => !object.markedForDeletion)
+    particles = particles.filter(object => !object.markedForDeletion)
 
     if (!gameOver) requestAnimationFrame(animate);
     else drawGameOver();
 }
 
-animate(0) // we set 0 to the timestamp argument because its first value is undefined and it causes NaN values for our calculations
+animate(0) // we set 0 to the timestamp argument because its first default value is undefined and it causes NaN values for our calculations
