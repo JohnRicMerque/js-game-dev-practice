@@ -10,6 +10,7 @@ collisionCanvas.width = window.innerWidth;
 collisionCanvas.height = window.innerHeight;
 
 let score = 0; // scoring
+let gameOver = false;
 ctx.font = '50px Impact';
 
 let timeToNextRaven = 0; // accumulate ms values between frames until it reaches interval value and trigger next frame
@@ -62,6 +63,8 @@ class Raven {
             // reset var
             this.timeSinceFlap = 0;
         }
+        if (this.x < 0 - this.width) gameOver = true; // game over condition
+
 
     }
     draw(){
@@ -112,6 +115,12 @@ function drawScore(){
     ctx.fillText('Score: ' + score, 50, 75)
 }
 
+function drawGameOver(){
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'black';
+    ctx.fillText('Game Over, your score is '+ score, canvas.width/2, canvas.height/2);
+}
+
 // scans the other canvas
 window.addEventListener('click', function(e){
     // get color data in clicking boxes
@@ -156,7 +165,8 @@ function animate(timestamp){ // timestamp is a built in argument that calculates
     ravens = ravens.filter(object => !object.markedForDeletion) // reassign ravens array with the filtered array that returns only objects that is not marked for deletion
     explosions = explosions.filter(object => !object.markedForDeletion)
 
-    requestAnimationFrame(animate)
+    if (!gameOver) requestAnimationFrame(animate);
+    else drawGameOver();
 }
 
 animate(0) // we set 0 to the timestamp argument because its first value is undefined and it causes NaN values for our calculations
