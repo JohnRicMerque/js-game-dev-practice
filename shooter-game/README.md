@@ -6,7 +6,7 @@ A complete point and shoot game with randomized target size and speed, explosion
 <img src="./images/shootergamepreview.gif"/>
 
 ## What I learned
-Incorporating delta time to unify speed accross devices with different processing speed. Familiarizing with and setting classes and class methods and properties. Using arrays to house class instances, and push and filter method to add and delete them. Sprite animation. Over-all algorithm and logic in game development and vanilla JavaScript 
+Incorporating delta time to unify speed accross devices with different processing speed. Familiarizing with and setting classes and class methods and properties to construct an element in the game and make it interact with other elements. Using arrays to house class instances, and push and filter method to add and delete them to the canvas. Using sprite animation and event-triggered animation. Over-all algorithm and logic in game development and vanilla JavaScript. 
 
 ## Reference 
 JavaScript Shooter Game Tutorial by Franks Laboratory<br/>
