@@ -10,4 +10,4 @@ Incorporating delta time to unify speed accross devices with different processin
 
 ## Reference 
 JavaScript Shooter Game Tutorial by Franks Laboratory<br/>
-Youtube Link : [Parallax in JavaScript Games](https://www.youtube.com/watch?v=gCa0z4B-CRo&ab_channel=Frankslaboratory)
+Youtube Link : [JavaScript Shooter Game Tutorial](https://www.youtube.com/watch?v=gCa0z4B-CRo&ab_channel=Frankslaboratory)
