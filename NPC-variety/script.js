@@ -2,8 +2,8 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
 
     const canvas = document.getElementById('canvas1');
     const ctx = canvas.getContext('2d');
-    canvas.width = 500;
-    canvas.height = 800;
+    canvas.width = 1000;
+    canvas.height = 500;
 
     class Game {
         constructor(ctx, width, height){ // to avoid using global variables, use parameters
