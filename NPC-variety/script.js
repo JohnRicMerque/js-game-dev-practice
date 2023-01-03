@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.enemies = [];
             this.enemyInterval = 500; // time (ms) interval before adding new enemy
             this.enemyTimer = 0; // timer resets to 0 when reaches 400
-            this.enemyTypes = ['worm', 'ghost']; 
+            this.enemyTypes = ['worm', 'ghost', 'spider']; 
         }
         update(deltaTime){
             this.enemies = this.enemies.filter(object => !object.markedForDeletion) // deletes enemy elements passing out the canvas by reassigning values of the array to house only objects that are not marked for deletion (false value)
@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
                 this.enemies.push(new Worm(this)); // this inside enemy refers to the Game class
             } else if (randomEnemy == 'ghost'){
                 this.enemies.push(new Ghost(this));
+            } else if (randomEnemy == 'spider'){
+                this.enemies.push(new Spider(this));
             }
 
             this.enemies.sort(function(a,b){ // so that enemy elements with higher vertical value (y) are on top of those with lower to have that 2d space effect
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.markedForDeletion = false
         }
         update(deltaTime){
-            this.x -= this.speed * deltaTime; // we use delta time here we multiply but it will make sure same pacing is done to enemy objects
+            this.x -= this.vx * deltaTime; // we use delta time here we multiply but it will make sure same pacing is done to enemy objects
             if (this.x < 0 - this.width) this.markedForDeletion = true;
         }
         draw(ctx){
@@ -70,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.x = game.width;
             this.y = this.game.height - this.height; // makes worm only on ground
             this.image = worm; // this syntax utilizes the images in the html DOM, by calling its id no need for selector
-            this.speed = Math.random() * 0.1 + 0.1;
+            this.vx = Math.random() * 0.1 + 0.1;
         }
 
     }
@@ -85,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.x = game.width;
             this.y = Math.random() * this.game.height * 0.7; // multiplying 0.8 here makes ghost only appear on 80% of the canvas from above
             this.image = ghost; // this syntax utilizes the images in the html DOM, by calling its id no need for selector
-            this.speed = Math.random() * 0.3 + 0.1;
+            this.vx = Math.random() * 0.3 + 0.1;
             this.angle = 0;
             this.curve = Math.random() * 3;
         }
@@ -94,13 +96,42 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.y += Math.sin(this.angle) * this.curve;
             this.angle += 0.04 // for random wavy motion
         }
-        draw(){
+        draw(ctx){
             ctx.save();
             ctx.globalAlpha = 0.7; // this is like fill style but for opacity, here we use ctx save and restore to only apply codeblocks in the middle, and reset when its done. so ghosts are the only elements with opacity modified
             super.draw(ctx) // super is parent class, we are calling its draw method here (Enemy class)
             ctx.restore();
         }
 
+    }
+
+    class Spider extends Enemy{ // subclassing, worm inherits from parent class Enemy
+        constructor(game){
+            super(game) // takes all constructor properties from the parent class (Game
+            this.spriteWidth = 310;
+            this.spriteHeight = 175;
+            this.width = this.spriteWidth/2;
+            this.height = this.spriteHeight/2;
+            this.x = Math.random() * game.width;
+            this.y = 0 - this.height; // makes worm only on ground
+            this.image = spider; // this syntax utilizes the images in the html DOM, by calling its id no need for selector
+            this.vx = 0;
+            this.vy = Math.random() * 0.1 + 0.1;
+            this.maxLength = Math.random() * this.game.height;
+        }
+        update(deltaTime){
+            super.update(deltaTime);
+            this.y += this.vy * deltaTime; 
+            if (this.y > this.maxLength) this.vy *= -1;
+        }
+        draw(ctx){
+            // for spider web
+            ctx.beginPath();
+            ctx.moveTo(this.x + this.width/2, 0); // starting
+            ctx.lineTo(this.x + this.width/2, this.y + 10); // ending
+            ctx.stroke();
+            super.draw(ctx);
+        }
     }
 
     const game = new Game(ctx, canvas.width, canvas.height);
