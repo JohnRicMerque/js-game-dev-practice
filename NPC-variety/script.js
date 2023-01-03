@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.width = width;
             this.height = height;
             this.enemies = [];
-            this.enemyInterval = 200; // time (ms) interval before adding new enemy
+            this.enemyInterval = 500; // time (ms) interval before adding new enemy
             this.enemyTimer = 0; // timer resets to 0 when reaches 400
             this.enemyTypes = ['worm', 'ghost']; 
         }
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.width = this.spriteWidth/2;
             this.height = this.spriteHeight/2;
             this.x = game.width;
-            this.y = Math.random() * this.game.height;
+            this.y = this.game.height - this.height; // makes worm only on ground
             this.image = worm; // this syntax utilizes the images in the html DOM, by calling its id no need for selector
             this.speed = Math.random() * 0.1 + 0.1;
         }
@@ -83,9 +83,22 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.width = this.spriteWidth/2;
             this.height = this.spriteHeight/2;
             this.x = game.width;
-            this.y = Math.random() * this.game.height;
+            this.y = Math.random() * this.game.height * 0.7; // multiplying 0.8 here makes ghost only appear on 80% of the canvas from above
             this.image = ghost; // this syntax utilizes the images in the html DOM, by calling its id no need for selector
             this.speed = Math.random() * 0.3 + 0.1;
+            this.angle = 0;
+            this.curve = Math.random() * 3;
+        }
+        update(deltaTime){
+            super.update(deltaTime); // super is parent class, we are calling its update method here (Enemy class)
+            this.y += Math.sin(this.angle) * this.curve;
+            this.angle += 0.04 // for random wavy motion
+        }
+        draw(){
+            ctx.save();
+            ctx.globalAlpha = 0.7; // this is like fill style but for opacity, here we use ctx save and restore to only apply codeblocks in the middle, and reset when its done. so ghosts are the only elements with opacity modified
+            super.draw(ctx) // super is parent class, we are calling its draw method here (Enemy class)
+            ctx.restore();
         }
 
     }
