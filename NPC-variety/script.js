@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.spriteHeight = 175;
             this.width = this.spriteWidth/2;
             this.height = this.spriteHeight/2;
-            this.x = Math.random() * game.width;
+            this.x = Math.random() * (game.width - this.width);
             this.y = 0 - this.height; // makes worm only on ground
             this.image = spider; // this syntax utilizes the images in the html DOM, by calling its id no need for selector
             this.vx = 0;
@@ -135,6 +135,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
         }
         update(deltaTime){
             super.update(deltaTime);
+            if (this.y < 0 - this.height *2) this.markedForDeletion = true;
             this.y += this.vy * deltaTime; 
             if (this.y > this.maxLength) this.vy *= -1;
         }
