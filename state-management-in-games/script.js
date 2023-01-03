@@ -14,4 +14,10 @@ window.addEventListener('load', function(){
     player.draw(ctx)
 
     const input = new InputHandler();
+
+    function animate(){
+        console.log(input.lastKey)
+        requestAnimationFrame(animate)
+    }
+    animate()
 }) 
