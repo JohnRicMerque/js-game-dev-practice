@@ -52,13 +52,27 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
         constructor(game) {
             this.game = game;
             this.markedForDeletion = false
+            this.frameX = 0;
+            this.maxFrame = 5;
+            this.frameInterval = 100;
+            this.frameTimer = 0;
         }
         update(deltaTime){
             this.x -= this.vx * deltaTime; // we use delta time here we multiply but it will make sure same pacing is done to enemy objects
             if (this.x < 0 - this.width) this.markedForDeletion = true;
+
+            if(this.frameTimer > this.frameInterval) {
+                if (this.frameX >= this.maxFrame){
+                    this.frameX = 0
+                    this.frameTimer = 0
+                } else this.frameX++
+                
+            } else {
+                this.frameTimer += deltaTime;
+            }
         }
         draw(ctx){
-            ctx.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width, this.height)
+            ctx.drawImage(this.image, this.frameX * this.spriteWidth, 0, this.spriteWidth, this.spriteHeight, this.x, this.y, this.width, this.height)
         }
     }
 
@@ -117,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
             this.image = spider; // this syntax utilizes the images in the html DOM, by calling its id no need for selector
             this.vx = 0;
             this.vy = Math.random() * 0.1 + 0.1;
-            this.maxLength = Math.random() * this.game.height;
+            this.maxLength = Math.random() * (this.game.height * 0.8);
         }
         update(deltaTime){
             super.update(deltaTime);
@@ -155,3 +169,5 @@ document.addEventListener('DOMContentLoaded', function(){ // run all code when a
 });
 
 // an improved code structure that avoids global variables code repitition, uses deltaTime, private methods, class inheritance or sub classing
+
+// delta time concept, if processing speed is better, it will run frames quickly and delta time is less say 16ms, contratrily slower processing speed would run slower and delta time is big say 30+. note that delta time is the time it takes for each frame to render. these are time so 16 would run twice, and 30+ only once in ratio. so if we make a threshold in a variable with time interval and add delta time to our timer, and once it reaches that threshold we run our code. that would make any processing speed be unified run animations at the same speed regardless of processing speed. this avoids quicker game speeds in fast computers and slow in slow computers.
