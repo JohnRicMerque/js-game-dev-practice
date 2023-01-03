@@ -48,8 +48,8 @@ export class SittingLeft extends State {
         this.player.frameY = 9;
     }
     handleInput(input){
-        if (input === 'PRESS right') this.player.setState(states.SITTING_RIGHT) 
-        else if (input === 'PRESS up') this.player.setState(states.STANDING_LEFT)
+        if (input === 'PRESS right') this.player.setState(states.SITTING_RIGHT); 
+        else if (input === 'RELEASE down') this.player.setState(states.STANDING_LEFT);
     }
 }
 
@@ -62,7 +62,7 @@ export class SittingRight extends State {
         this.player.frameY = 8;
     }
     handleInput(input){
-        if (input === 'PRESS left') this.player.setState(states.SITTING_LEFT) 
-        else if (input === 'PRESS up') this.player.setState(states.STANDING_RIGHT)
+        if (input === 'PRESS left') this.player.setState(states.SITTING_LEFT); 
+        else if (input === 'RELEASE down') this.player.setState(states.STANDING_RIGHT);
     }
 }
