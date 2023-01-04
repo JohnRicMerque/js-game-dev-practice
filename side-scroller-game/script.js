@@ -5,7 +5,8 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
     const ctx = canvas.getContext('2d')
     canvas.width = 800;
     canvas.height = 720;
-    let enemies = []
+    let enemies = []; // houses all eney object elements
+    let score = 0;
 
     class InputHandler { // concept: adds pressed keys in keys array, deletes them when player removes hold of that key. esentially array only holds presently pressed keys
         constructor(){
@@ -146,16 +147,20 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
             context.drawImage(this.image, this.frameX * this.width, 0, this.width, this.height, this.x, this.y, this.width, this.height)
         }
         update(deltaTime){
-            if (this.frameTimer > this.frameInterval){
+            if (this.frameTimer > this.frameInterval){ // animate spritesheet relative to deltaTime
                 if (this.frameX >= this.maxFrame) this.frameX = 0;
                 else this.frameX++
                 this.frameTimer = 0;
             } else {
                 this.frameTimer += deltaTime
-            } // animate spritesheet relative to deltaTime
+            } 
             this.x -= this.speed; // move to the left
 
-            if (this.x < 0 - this.width) this.markedForDeletion = true;
+            if (this.x < 0 - this.width) {
+                this.markedForDeletion = true;
+                score++;
+            }
+             // when sprite moves way past the canvas mark it for deletion and add score
         }
     }
 
@@ -174,8 +179,10 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
         enemies = enemies.filter(enemy => !enemy.markedForDeletion) // to retain enemies not marked for deletion hence the (!)
     }
 
-    function displayStatusText(){
-
+    function displayStatusText(context){
+        context.fillStyle = 'black';
+        context.font = '40px Helvetica';
+        context.fillText('Score: ' + score, 20, 50)
     }
 
     // class instantiate
@@ -192,12 +199,13 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
 
-        ctx.clearRect(0,0,canvas.width,canvas.height)
-        background.draw(ctx)
-        background.update()
-        player.draw(ctx)
-        player.update(input, deltaTime)
-        handleEnemies(deltaTime)
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        background.draw(ctx);
+        background.update();
+        player.draw(ctx);
+        player.update(input, deltaTime);
+        handleEnemies(deltaTime);
+        displayStatusText(ctx);
         requestAnimationFrame(animate)
     }
 
