@@ -14,12 +14,15 @@ window.addEventListener('load', function(){
     const player = new Player(canvas.width, canvas.height); // class instantiate
     const input = new InputHandler();
 
-    function animate(){ // animation loop
+    let LastTime = 0;
+    function animate(timeStamp){ // animation loop
+        const deltaTime = timeStamp - LastTime;
+        LastTime = timeStamp;
         ctx.clearRect(0,0,canvas.width,canvas.height); // clear canvas every frame
         player.update(input.lastKey) // argument here is string last key like "PRESSED ArrowLeft"
-        player.draw(ctx)
+        player.draw(ctx, deltaTime)
         drawStatusText(ctx, input, player);
         requestAnimationFrame(animate)
     }
-    animate()
+    animate(0)
 }) 

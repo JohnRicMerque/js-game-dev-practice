@@ -12,16 +12,22 @@ export default class Player {
         this.x = this.gameWidth/2 - this.width/2;
         this.y = this.gameHeight - this.height;
         this.vy = 0;
-        this.weight = 1;
+        this.weight = 1; // gravity
         this.frameX = 0;
         this.frameY = 0;
         this.maxFrame = 6
         this.speed = 0;
-        this.maxSpeed = 10;
+        this.maxSpeed = 10; // dog speed
+        this.fps = 30 // frame speed, how fast animation is
+        this.frameTimer = 0; // houses increments in time
+        this.frameInterval = 1000/this.fps // time interval that measures how long each frame should be run, relative to fps
     }
-    draw(context){
-        if(this.frameX < this.maxFrame) this.frameX++;
-        else this.frameX = 0;
+    draw(context, deltaTime){
+        if (this.frameTimer > this.frameInterval){
+            if(this.frameX < this.maxFrame) this.frameX++;
+            else this.frameX = 0; // animation sprite loop
+            this.frameTimer = 0;
+        } else this.frameTimer += deltaTime;   
 
         context.drawImage(this.image, this.width * this.frameX, this.height * this.frameY, this.width, this.height, this.x, this.y, this.width, this.height);
     }
