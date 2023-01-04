@@ -140,6 +140,7 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
             this.frameTimer = 0;
             this.frameInterval = 1000/this.fps;
             this.speed = 8;
+            this.markedForDeletion = false;
         }
         draw(context){
             context.drawImage(this.image, this.frameX * this.width, 0, this.width, this.height, this.x, this.y, this.width, this.height)
@@ -153,12 +154,14 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
                 this.frameTimer += deltaTime
             } // animate spritesheet relative to deltaTime
             this.x -= this.speed; // move to the left
+
+            if (this.x < 0 - this.width) this.markedForDeletion = true;
         }
     }
 
     function handleEnemies(deltaTime){
         if (enemyTimer > enemyInterval + randomEnemyInterval){
-            enemies.push(new Enemy(canvas.width, canvas.height));
+            enemies.push(new Enemy(canvas.width, canvas.height)); // adds enemies to array
             enemyTimer = 0;
         } else {
             enemyTimer += deltaTime;
@@ -167,6 +170,8 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
             enemy.draw(ctx)
             enemy.update(deltaTime)
         })
+
+        enemies = enemies.filter(enemy => !enemy.markedForDeletion) // to retain enemies not marked for deletion hence the (!)
     }
 
     function displayStatusText(){
