@@ -31,7 +31,26 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
     }
 
     class Player {
-
+        constructor(gameWidth, gameHeight){
+            this.gameWidth = gameWidth;
+            this.gameHeight = gameHeight;
+            this.width = 200;
+            this.height = 200;
+            this.x = 0;
+            this.y = this.gameHeight - this.height;
+            this.image = document.getElementById('playerImage');
+            this.frameX = 0;
+            this.frameY = 0;
+            this.speed = 0;
+        }
+        draw(context){
+            context.fillStyle = 'white';
+            context.fillRect(this.x, this.y, this.width, this.height);
+            context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height,  this.x, this.y, this.width, this.height)
+        }
+        update(){
+            this.x += this.speed; // horizontal motion
+        }
     }
 
     class Background {
@@ -51,8 +70,14 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
     }
 
     const input = new InputHandler();
+    const player = new Player(canvas.width, canvas.height);
 
     function animate(){
-
+        ctx.clearRect(0,0,canvas.width,canvas.height)
+        player.draw(ctx)
+        player.update()
+        requestAnimationFrame(animate)
     }
+
+    animate(0);
 })
