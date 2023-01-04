@@ -5,6 +5,7 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
     const ctx = canvas.getContext('2d')
     canvas.width = 800;
     canvas.height = 720;
+    let enemies = []
 
     class InputHandler { // concept: adds pressed keys in keys array, deletes them when player removes hold of that key. esentially array only holds presently pressed keys
         constructor(){
@@ -111,7 +112,22 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
     }
 
     class Enemy {
-
+        constructor(gameWidth, gameHeight){
+            this.gameWidth = gameWidth;
+            this.gameHeight = gameHeight;
+            this.width = 160;
+            this.height = 119;
+            this.image = document.getElementById('enemyImage');
+            this.x = gameWidth - this.width;
+            this.y = gameHeight - this.height;
+            this.frameX = 0
+        }
+        draw(context){
+            context.drawImage(this.image, this.frameX * this.width, 0, this.width, this.height, this.x, this.y, this.width, this.height)
+        }
+        update(){
+            this.x--;
+        }
     }
 
     function handleEnemies(){
@@ -122,9 +138,11 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
 
     }
 
+    // class instantiate
     const input = new InputHandler();
     const player = new Player(canvas.width, canvas.height);
     const background = new Background(canvas.width, canvas.height)
+    const enemy1 = new Enemy(canvas.width, canvas.height)
 
     function animate(){
         ctx.clearRect(0,0,canvas.width,canvas.height)
@@ -132,6 +150,8 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
         background.update()
         player.draw(ctx)
         player.update(input)
+        enemy1.draw(ctx)
+        enemy1.update()
         requestAnimationFrame(animate)
     }
 
