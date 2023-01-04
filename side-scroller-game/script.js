@@ -88,7 +88,26 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
     }
 
     class Background {
-
+        constructor(gameWidth, gameHeight){
+            this.gameWidth = gameWidth;
+            this.gameHeight = gameHeight;
+            this.image = document.getElementById('backgroundImage')
+            this.x = 0;
+            this.y = 0;
+            this.width = 2400;
+            this.height = 720;
+            this.speed = 7;
+        }
+        draw(context){
+            context.drawImage(this.image, this.x, this.y, this.width, this.height);
+            context.drawImage(this.image, this.x + this.width - this.speed, this.y, this.width, this.height); // two backgrounbds are drawn side by side to create an illusion of endless background. -this.speed accounts for small gap 
+        }
+        update(){
+            this.x -= this.speed
+            if (this.x < 0 - this.width){ // background scrolled offscreen
+                this.x = 0; // reset background
+            } 
+        }
     }
 
     class Enemy {
@@ -105,9 +124,12 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
 
     const input = new InputHandler();
     const player = new Player(canvas.width, canvas.height);
+    const background = new Background(canvas.width, canvas.height)
 
     function animate(){
         ctx.clearRect(0,0,canvas.width,canvas.height)
+        background.draw(ctx)
+        background.update()
         player.draw(ctx)
         player.update(input)
         requestAnimationFrame(animate)
