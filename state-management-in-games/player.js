@@ -22,6 +22,8 @@ export default class Player {
     update(input){ // argument here is string last key like "PRESSED ArrowLeft"
         this.currentState.handleInput(input) // this.currentState here is a state instance like new StandingLeft(this) handles input that will determine set State
         this.x += this.speed;
+        if (this.x <= 0) this.x = 0;
+        else if (this.x >= this.gameWidth - this.width) this.x = this.gameWidth - this.width;
     }
     setState(state){ // state parameter here will be an index
         this.currentState = this.states[state] // select current state object based on the index in states array
