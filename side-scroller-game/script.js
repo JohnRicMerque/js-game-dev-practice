@@ -69,10 +69,12 @@ window.addEventListener('load', function(){ // waits for all assets to load befo
 
             // vertical motion
             this.y += this.vy;
-            if (!this.onGround()){
-                this.vy += this.weight;
+            if (!this.onGround()){ // if player not on ground
+                this.vy += this.weight; // add vertical speed
+                this.frameY = 1 // changes sprite sheet 
             } else {
                 this.vy = 0;
+                this.frameY = 0 // reset sprite sheet and vertixal speed
             }
 
             // vertical boundaries
